@@ -18,7 +18,7 @@ class Game:
             |     |     |     |
             |-----------------|"""
 
-    def start_game(self, player1, player2):
+    def start(self, player1, player2):
         self.state = True
         self.player1 = player1
         self.player2 = player2
