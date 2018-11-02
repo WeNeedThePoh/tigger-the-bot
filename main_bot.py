@@ -4,6 +4,8 @@ from game import Game
 client = discord.Client()
 token = open("to.txt","r").read();
 game = Game()
+msg = ""
+turn = ""
 
 @client.event
 async def on_ready():
@@ -13,26 +15,35 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if "!3lines" in message.content and not game.state:
+    global msg
+    global turn
+    channel = message.channel
+    msg_content = message.content
+
+    if "!3lines" in msg_content and game.state is False:
         game.start(message.author, message.mentions[0])
-        await message.channel.send(f"{game.player1.nick}: X vs {game.player2.nick}: O")
-        await message.channel.send(f"```{game.board_visual}```")
-        await message.channel.send(f"{game.player1.nick} your turn!")
+        await channel.send(f"{game.player1.nick}: X vs {game.player2.nick}: O")
+        msg = await channel.send(f"```{game.board_visual}```")
+        turn = await channel.send(f"{game.player1.nick} your turn!")
 
-    elif game.state and len(message.content) == 3 and message.author.id == game.turn:
-        play = list(message.content[1:])
-        column = int(play[0])
-        row = int(play[1])
-        print(f"column: {column}   row: {row}")
+    elif game.state is True and len(msg_content) == 3 and message.author.id == game.turn:
+        move = list(msg_content[1:])
+        row = int(move[0])
+        column = int(move[1])
 
-        if 0 <= column < 3 and 0 <= row < 3:
-            if game.board[column][row] == '-':
+        if 0 <= row < 3 and 0 <= column < 3:
+            if game.board[row][column] == " ":
                 if game.player1.id == message.author.id:
-                    game.board[column][row] = 'X'
+                    game.board[row][column] = "X"
                     game.turn = game.player2.id
-                elif game.player2.id + 1 == message.author.id:
-                    game.board[column][row] = 'O'
+                    game.make_visual_board()
+                    await turn.edit(content=f"{game.player2.nick} your turn!")
+                elif game.player2.id == message.author.id:
+                    game.board[row][column] = "O"
                     game.turn = game.player1.id
-        print(f"{game.board}")
+                    game.make_visual_board()
+                    await turn.edit(content=f"{game.player1.nick} your turn!")
+
+                await msg.edit(content=f"```{game.board_visual}```")
 
 client.run(token)
