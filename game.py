@@ -3,7 +3,7 @@ class Game:
         self.player1 = ""
         self.player2 = ""
         self.state = False
-        self.turn = 0
+        self.turn = ""
         self.board = [
             ["-", "-", "-"],
             ["-", "-", "-"],
@@ -22,3 +22,4 @@ class Game:
         self.state = True
         self.player1 = player1
         self.player2 = player2
+        self.turn = player1.id
