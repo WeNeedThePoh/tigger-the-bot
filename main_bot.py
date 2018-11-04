@@ -19,28 +19,32 @@ async def on_message(message):
     global turn
     channel = message.channel
     msg_content = message.content
+    player = message.author
+    command = list(msg_content)
 
     if "!3lines" in msg_content and game.state is False:
-        game.start(message.author, message.mentions[0])
+        game.start(player, message.mentions[0])
         await channel.send(f"{game.player_name(1)}: X vs {game.player_name(2)}: O")
         msg = await channel.send(f"```{game.board_visual}```")
         turn = await channel.send(f"{game.player_name(1)} your turn!")
-    elif game.state is True and len(msg_content) == 3 and message.author.id == game.turn:
-        move = list(msg_content[1:])
-        row = int(move[0])
-        column = int(move[1])
+
+    elif game.state is True and command[0] == "!" and len(command) == 3 and player.id == game.turn:
+        row = int(command[1])
+        column = int(command[2])
 
         if 0 <= row < 3 and 0 <= column < 3:
             if game.board[row][column] == " ":
-                if game.player1.id == message.author.id:
+                if game.player1.id == player.id:
                     game.board[row][column] = "X"
                     game.turn = game.player2.id
-                elif game.player2.id == message.author.id:
+                elif game.player2.id == player.id:
                     game.board[row][column] = "O"
                     game.turn = game.player1.id
 
                 game.make_visual_board()
                 await msg.edit(content=f"```{game.board_visual}```")
+                await message.delete()
+
                 winner = game.check_winner()
                 if winner is not None:
                     await turn.edit(content=f"{winner.nick} Won the game!")
