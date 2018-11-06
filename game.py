@@ -13,6 +13,7 @@ class Game:
         self.board = []
         self.board_visual = ""
 
+
     def start(self, player1, player2):
         self.state = True
         self.player1 = player1
@@ -20,11 +21,13 @@ class Game:
         self.turn = player1.id
         self.reset_board()
 
+
     def player_name(self, player):
         if player == 1:
             return self.player1.name.split("#")[0]
         else:
             return self.player2.name.split("#")[0]
+
 
     def make_visual_board(self):
         initial = 23
@@ -32,19 +35,29 @@ class Game:
         self.column_matches = ["", "", ""]
         self.diagonal_matches = ["", ""]
         board = list(self.board_visual)
+
         for index_r, row in enumerate(self.board):
             if index_r > 0:
                 initial = initial + self.ROW_DIFF
             for index_c, column in enumerate(row):
                 board[initial] = column
                 initial = initial + self.COLUMN_DIFF
-                self.row_matches[index_r] += column.strip()
-                self.column_matches[index_c] += column.strip()
-                if index_r - index_c == 0:
-                    self.diagonal_matches[0] += column.strip()
-                elif index_r + index_c == 2:
-                    self.diagonal_matches[1] += column.strip()
+                self.move_plays_into_groups(index_r, index_c, column)
         self.board_visual = "".join(board)
+
+
+    def move_plays_into_groups(self, row_index, column_index, column):
+        """
+        Group each move by column, row and diagonal, so it's easier to check for a winner
+        """
+
+        self.row_matches[row_index] += column.strip()
+        self.column_matches[column_index] += column.strip()
+        if row_index - column_index == 0:
+            self.diagonal_matches[0] += column.strip()
+        elif row_index + column_index == 2:
+            self.diagonal_matches[1] += column.strip()
+
 
     def check_winner(self):
         if "XXX" in self.row_matches or "XXX" in self.column_matches or "XXX" in self.diagonal_matches:
@@ -55,6 +68,7 @@ class Game:
             return self.player2
         else:
             return None
+
 
     def reset_board(self):
         self.board = [

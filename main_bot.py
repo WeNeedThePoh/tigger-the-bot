@@ -32,7 +32,7 @@ async def on_message(message):
         row = int(command[1])
         column = int(command[2])
 
-        if 0 <= row < 3 and 0 <= column < 3:
+        if all(i in range(0,3) for i in [row, column]):
             if game.board[row][column] == " ":
                 if game.player1.id == player.id:
                     game.board[row][column] = "X"
