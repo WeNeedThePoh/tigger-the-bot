@@ -4,12 +4,14 @@ class Game:
     row_matches = ["", "", ""]
     column_matches = ["", "", ""]
     diagonal_matches = ["", ""]
+    turn = dict()
 
     def __init__(self):
         self.player1 = ""
         self.player2 = ""
         self.state = False
         self.turn = ""
+        self.moves = []
         self.board = []
         self.board_visual = ""
 
@@ -18,7 +20,9 @@ class Game:
         self.state = True
         self.player1 = player1
         self.player2 = player2
-        self.turn = player1.id
+        self.turn["id"] = int(player1.id)
+        self.turn["player"] = 0
+        self.moves = ["X", "O"]
         self.reset_board()
 
 
@@ -68,6 +72,14 @@ class Game:
             return self.player2
         else:
             return None
+
+    def changeTurn(self):
+        if self.turn["player"] == 0:
+            self.turn["player"] = 1
+            self.turn["id"] = int(self.player2.id)
+        else:
+            self.turn["player"] = 0
+            self.turn["id"] = int(self.player1.id)
 
 
     def reset_board(self):

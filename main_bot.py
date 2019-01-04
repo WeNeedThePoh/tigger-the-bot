@@ -28,18 +28,14 @@ async def on_message(message):
         msg = await channel.send(f"```{game.board_visual}```")
         turn = await channel.send(f"{game.player_name(1)} your turn!")
 
-    elif game.state is True and command[0] == "!" and len(command) == 3 and player.id == game.turn:
+    elif game.state and command[0] == "!" and len(command) == 3 and player.id == game.turn['id']:
         row = int(command[1])
         column = int(command[2])
 
         if all(i in range(0,3) for i in [row, column]):
             if game.board[row][column] == " ":
-                if game.player1.id == player.id:
-                    game.board[row][column] = "X"
-                    game.turn = game.player2.id
-                elif game.player2.id == player.id:
-                    game.board[row][column] = "O"
-                    game.turn = game.player1.id
+                game.board[row][column] = game.moves[game.turn['player']]
+                game.changeTurn()
 
                 game.make_visual_board()
                 await msg.edit(content=f"```{game.board_visual}```")
